@@ -5,6 +5,7 @@ import 'package:MetalAppCubit/model/metal_data.dart';
 class DioHelper {
 	Dio _dio;
 
+	//Define base option
 	DioHelper(){
 		_dio = Dio(
 			BaseOptions(
@@ -45,9 +46,22 @@ class DioHelper {
 					'/index.php/List_Problem/${metalData.id}',
 					data: metalData.toJson(),
 				);
+				return Right(true);
 			} on DioError catch (error) {
-
+				return Left('$error');
 			}
+	}
+
+	//Delete data (DELETE)
+	Future<Either<String, bool>> deleteData(int id) async {
+		try {
+			await _dio.delete(
+				'index.php/List_Problem/$id',
+			);
+			return Right(true);
+		} on DioError catch (error) {
+			return Left('$error');
+		}
 	}
 
 }
