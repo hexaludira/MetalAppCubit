@@ -1,6 +1,6 @@
 # MetalAppCubit
 
-A new Flutter project.
+Hwaseung Metal Application implementing Bloc Cubit
 
 ## Getting Started
 
