@@ -1,5 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:MetalAppCubit/model/metal_data.dart';
+import 'package:cubit_metal/model/metal_data.dart';
 
 import '../repository/dio_helper.dart';
 import 'metal_state.dart';
@@ -45,6 +45,20 @@ class MetalCubit extends Cubit<MetalState> {
 		emit(LoadingMetalState());
 
 		var resultDelete = await dioHelper.deleteData(id);
-		
+		var resultDeleteFold = resultDelete.fold(
+			(errorMessage) => errorMessage,
+			(response) => response,
+		);
+
+		if (resultDeleteFold is String) {
+			emit(FailureDeleteMetalState(resultDeleteFold));
+			return;
+		}
+
+		var resultGetAllData = await dioHelper.getAllData();
+		resultGetAllData.fold(
+			(errorMessage) => emit(FailureLoadAllMetalState(errorMessage)),
+			(listMetal) => emit(SuccessLoadAllMetalState(listMetal, message: 'Metal Data deleted successfully')),
+		);
 	}
 }

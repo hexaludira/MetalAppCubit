@@ -1,4 +1,4 @@
-import 'package:MetalAppCubit/model/metal_data.dart';
+import 'package:cubit_metal/model/metal_data.dart';
 
 abstract class MetalState {}
 

@@ -1,15 +1,17 @@
 import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
-import 'package:MetalAppCubit/model/metal_data.dart';
+import 'package:cubit_metal/model/metal_data.dart';
 
 class DioHelper {
 	Dio _dio;
 
-	//Define base option
+	//Define base option as constructor
 	DioHelper(){
 		_dio = Dio(
 			BaseOptions(
 					baseUrl: 'http://10.10.41.246/rest_ci',
+          //baseUrl: 'http://10.0.2.2/rest_ci',
+          //baseUrl: 'http://localhost/rest_ci',
 				),
 			);
 		_dio.interceptors.add(LogInterceptor(requestBody: true, responseBody: true));
