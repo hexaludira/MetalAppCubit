@@ -16,7 +16,12 @@ class App extends StatelessWidget {
   @override
   Widget build(BuildContext context){
     return MaterialApp(
-      home: ListMetalPage(),
+      //home: ListMetalPage(),
+      initialRoute: '/',
+      routes: {
+        '/' : (context) => ListMetalPage(),
+        '/web_view' : (context) => WebView(),
+      },
     );
   }
 }
@@ -179,7 +184,7 @@ class NavDrawer extends StatelessWidget {
             leading: Icon(Icons.web),
             title: Text('Web Metal'),
             onTap: () {
-              Navigator.push(context, MaterialPageRoute(builder: (context) => WebView()));
+              Navigator.pushNamed(context, '/web_view');
             },
           ),
           ListTile(
