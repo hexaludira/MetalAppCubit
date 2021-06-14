@@ -9,8 +9,8 @@ class DioHelper {
 	DioHelper(){
 		_dio = Dio(
 			BaseOptions(
-					//baseUrl: 'http://10.10.41.246/rest_ci',
-          baseUrl: 'http://10.0.2.2/rest_ci',
+					baseUrl: 'http://10.10.41.246/rest_ci',
+          //baseUrl: 'http://10.0.2.2/rest_ci',
           //baseUrl: 'http://localhost/rest_ci',
 				),
 			);

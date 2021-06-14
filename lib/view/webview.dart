@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:webview_flutter/webview_flutter.dart';
+//import 'package:webview_flutter/webview_flutter.dart';
 import 'package:flutter_webview_plugin/flutter_webview_plugin.dart';
 //import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 
@@ -12,8 +12,8 @@ class _WebViewState extends State<WebView> {
   @override
   Widget build(BuildContext context) {
     return WebviewScaffold(
-      //url: "http://10.10.10.98/adidas",
-      url: "http://10.0.2.2/adidas_new",
+      url: "http://10.10.41.246/adidas",
+      //url: "http://10.0.2.2/adidas_new",
       withJavascript: true,
       appBar: AppBar(
         title: const Text('Metal Monitoring System'),
