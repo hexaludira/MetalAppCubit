@@ -49,9 +49,9 @@ class _ListMetalPageState extends State<ListMetalPage> {
       key: scaffoldState,
       drawer: NavDrawer(),
       appBar: AppBar(
-        leading: IconButton(icon: Icon(Icons.menu), onPressed: (){
-          scaffoldState.currentState.openDrawer();
-        }),
+        // leading: IconButton(icon: Icon(Icons.menu), onPressed: (){
+        //   scaffoldState.currentState.;
+        // }),
         title: Text('Metal Problem List'),
       ),
       body: BlocProvider<MetalCubit>(
@@ -178,13 +178,18 @@ class NavDrawer extends StatelessWidget {
           ListTile(
             leading: Icon(Icons.microwave_outlined),
             title: Text('Data Metal Problem'),
-            onTap: () {},
+            onTap: () {
+              Navigator.pop(context);
+              //Navigator.pushNamed(context, '/');
+            },
           ),
           ListTile(
             leading: Icon(Icons.web),
             title: Text('Web Metal'),
             onTap: () {
+              Navigator.pop(context);
               Navigator.pushNamed(context, '/web_view');
+              
             },
           ),
           ListTile(

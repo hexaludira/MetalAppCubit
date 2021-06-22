@@ -12,13 +12,14 @@ class _WebViewState extends State<WebView> {
   @override
   Widget build(BuildContext context) {
     return WebviewScaffold(
-      url: "http://10.10.41.246/adidas",
-      //url: "http://10.0.2.2/adidas_new",
+      //url: "http://10.10.41.246/adidas",
+      url: "http://10.0.2.2/adidas_new",
       withJavascript: true,
       appBar: AppBar(
         title: const Text('Metal Monitoring System'),
         leading: IconButton(icon: Icon(Icons.arrow_back), onPressed: (){
-          Navigator.popAndPushNamed(context, '/');
+          //Navigator.popAndPushNamed(context, '/');
+          Navigator.popUntil(context, ModalRoute.withName('/'));
         }), 
       ),
     );
