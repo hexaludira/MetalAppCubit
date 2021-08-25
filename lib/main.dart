@@ -1,5 +1,8 @@
 import 'dart:io';
 
+import 'package:cubit_metal/model/metal_data.dart';
+import 'package:cubit_metal/view/input_problem.dart';
+import 'package:cubit_metal/view/splash_screen.dart';
 import 'package:cubit_metal/view/webview.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
@@ -17,9 +20,15 @@ class App extends StatelessWidget {
   Widget build(BuildContext context){
     return MaterialApp(
       //home: ListMetalPage(),
+      debugShowCheckedModeBanner: false,
+      title: 'Metal System',
+      theme: ThemeData(
+        primaryColor: Colors.grey[600],
+      ),
       initialRoute: '/',
       routes: {
-        '/' : (context) => ListMetalPage(),
+        '/' : (context) => SplashScreenPage(),
+        '/list_problem' : (context) => ListMetalPage(),
         '/web_view' : (context) => WebView(),
       },
     );
@@ -36,11 +45,37 @@ class _ListMetalPageState extends State<ListMetalPage> {
   final scaffoldState = GlobalKey<ScaffoldState>();
   MetalCubit metalCubit;
 
+  //text editing controller untuk filter text search
+  final TextEditingController _filter = TextEditingController();
+  Icon _searchIcon = Icon(Icons.search);
+  String _searchText = "";
+  Widget _appBarTitle = Text("List Metal Problem", style: TextStyle(color: Colors.white),);
+  List<MetalData> problemList = [];
+  List<MetalData> filteredData = [];
+
+  //constructor _ListMetalPageState
+  _ListMetalPageState() {
+    _filter.addListener(() {
+      if(_filter.text.isEmpty){
+        setState(() {
+                  _searchText = "";
+                  filteredData = problemList;
+                });
+      } else {
+        setState(() {
+                  _searchText = _filter.text;
+                });
+      }
+    });
+  }
+  
+
   @override
   void initState(){
+    super.initState();
     metalCubit = MetalCubit(DioHelper());
     metalCubit.getAllData();
-    super.initState();
+    
   }
 
   @override
@@ -49,10 +84,16 @@ class _ListMetalPageState extends State<ListMetalPage> {
       key: scaffoldState,
       drawer: NavDrawer(),
       appBar: AppBar(
-        // leading: IconButton(icon: Icon(Icons.menu), onPressed: (){
-        //   scaffoldState.currentState.;
-        // }),
-        title: Text('Metal Problem List'),
+        title: _appBarTitle,
+        iconTheme: IconThemeData(color: Colors.white),
+        actions: <Widget>[
+          IconButton(
+            icon: _searchIcon,
+            tooltip: 'Cari data',
+            onPressed: () {
+              _cariData();
+            })
+        ],
       ),
       body: BlocProvider<MetalCubit>(
         create: (_) => metalCubit,
@@ -84,66 +125,11 @@ class _ListMetalPageState extends State<ListMetalPage> {
                   child: Text(state.errorMessage),
                 );
               } else if (state is SuccessLoadAllMetalState) {
-                var listMetal = state.listMetal;
-                return ListView.builder(
-                  padding: EdgeInsets.all(16),
-                  itemCount : listMetal.length,
-                  itemBuilder : (_, index) {
-                    var metalData = listMetal[index];
-                    return Card(
-                      child: Padding(
-                        padding: const EdgeInsets.all(8),
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: <Widget>[
-                            //detail lokasi dan masalah 
-                            Text(
-                              metalData.location + ' \u25BA ' + metalData.detail,
-                              style: Theme.of(context).textTheme.headline6,
-                            ),
-                            //Tanggal
-                            Text(
-                              metalData.date,
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 16, color: Colors.grey[700],
-                              ),
-                            ),
-                            //Status
-                            Text(
-                              'Status: ' + metalData.status,
-                            ),
-                            //Keterangan
-                            Text(
-                              'Ket: ' + metalData.remark,
-                            ),
-                            //Button
-                            Row(
-                              children: <Widget>[
-                                TextButton(
-                                  onPressed: () {}, 
-                                  child: Text(
-                                    'Delete',
-                                    style: TextStyle(color: Colors.red),
-                                  )
-                                ),
-                                SizedBox(width: 7.0,),
-                                TextButton(
-                                  onPressed: () {}, 
-                                  child: Text(
-                                    'Edit',
-                                    style: TextStyle(color: Colors.teal),
-                                  )
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
-                      ),
-                    );
-                  }
-                );
+                //var listMetal = state.listMetal;
+                filteredData = state.listMetal;
+
+                return _buildListView(filteredData); 
+                
               } else {
                 return Container();
               }
@@ -152,8 +138,131 @@ class _ListMetalPageState extends State<ListMetalPage> {
           )
                
         )
-      )
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
+      floatingActionButton: FloatingActionButton(
+        child: Icon(Icons.add),
+        backgroundColor: Colors.grey,
+        onPressed: () {
+          Navigator.push(context, MaterialPageRoute(builder: (context) => InputProblem()));
+        }
+      ),
     );
+  }
+
+  Widget _buildListView(List<MetalData> metalData){
+    if(_searchText.isNotEmpty){
+      List<MetalData> tempList = [];
+      metalData.forEach((element) {
+        if(element.location.toLowerCase().contains(_searchText.toLowerCase()) || element.detail.toLowerCase().contains(_searchText.toLowerCase()) || element.date.toLowerCase().contains(_searchText.toLowerCase()) || element.remark.toLowerCase().contains(_searchText.toLowerCase()) || element.status.toLowerCase().contains(_searchText.toLowerCase())) {
+          tempList.add(element);
+        }
+      });
+      filteredData = tempList;
+    }
+
+    return RefreshIndicator(
+      onRefresh: refreshData,
+      child: Padding(
+        padding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+        child: ListView.builder(
+          padding: EdgeInsets.all(16),
+          itemCount : filteredData.length,
+          itemBuilder : (_, index) {
+            var listMetalData = filteredData[index];
+            return Padding(
+              padding: const EdgeInsets.only(top: 8.0),
+              child: Card(
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      //detail lokasi dan masalah 
+                      Text(
+                        listMetalData.location + ' \u25BA ' + listMetalData.detail,
+                        style: Theme.of(context).textTheme.headline6,
+                      ),
+                      //Tanggal
+                      Text(
+                        listMetalData.date,
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16, color: Colors.grey[700],
+                        ),
+                      ),
+                      //Status
+                      Text(
+                        'Status: ' + listMetalData.status,
+                      ),
+                      //Keterangan
+                      Text(
+                        'Ket: ' + listMetalData.remark,
+                      ),
+                      //Button
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: <Widget>[
+                          TextButton(
+                            onPressed: () {}, 
+                            child: Text(
+                              'Delete',
+                              style: TextStyle(color: Colors.red),
+                            )
+                          ),
+                          SizedBox(width: 7.0,),
+                          TextButton(
+                            onPressed: () {}, 
+                            child: Text(
+                              'Edit',
+                              style: TextStyle(color: Colors.teal),
+                            )
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            );
+          }
+        ), 
+      ),
+    );
+    
+  }
+
+  //fungsi refreshData
+  Future refreshData() async {
+    await Future.delayed(Duration(seconds: 2));
+    metalCubit.getAllData();
+    setState(() {
+          
+        });
+  }
+
+  void _cariData() {
+    setState(() {
+          if (this._searchIcon.icon == Icons.search){
+            this._searchIcon = Icon(Icons.close);
+            this._appBarTitle = TextField(
+              controller: _filter,
+              autofocus: true,
+              style: TextStyle(color: Colors.white),
+              decoration: InputDecoration(
+                prefixIcon: Icon(Icons.search, color: Colors.white,),
+                hintText: 'Cari...',
+                hintStyle: TextStyle(color: Colors.white),
+              ),
+            );
+          } else {
+            this._searchIcon = Icon(Icons.search);
+            this._appBarTitle = Text("List Metal Problem", style: TextStyle(color: Colors.white),);
+            filteredData = problemList;
+            _filter.clear();
+          }
+        });
   }
 }
 
@@ -180,7 +289,7 @@ class NavDrawer extends StatelessWidget {
             title: Text('Data Metal Problem'),
             onTap: () {
               Navigator.pop(context);
-              //Navigator.pushNamed(context, '/');
+              Navigator.pushNamed(context, '/list_problem');
             },
           ),
           ListTile(

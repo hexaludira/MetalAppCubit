@@ -8,12 +8,12 @@ part of 'metal_data.dart';
 
 MetalData _$MetalDataFromJson(Map<String, dynamic> json) {
   return MetalData(
-    json['id'] as int,
-    json['date'] as String,
-    json['detail'] as String,
-    json['location'] as String,
-    json['status'] as String,
-    json['remark'] as String,
+    id: json['id'] as int,
+    date: json['date'] as String,
+    detail: json['detail'] as String,
+    location: json['location'] as String,
+    status: json['status'] as String,
+    remark: json['remark'] as String,
   );
 }
 

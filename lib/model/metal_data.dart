@@ -5,7 +5,7 @@ part 'metal_data.g.dart';
 @JsonSerializable()
 class MetalData {
 	@JsonKey(name: 'id')
-	final int id;
+	int id;
 	@JsonKey(name: 'date')
 	final String date;
 	@JsonKey(name: 'detail')
@@ -18,14 +18,14 @@ class MetalData {
 	final String remark;
 
 	//Constructor
-	MetalData(
+	MetalData({
 		this.id,
 		this.date,
 		this.detail,
 		this.location,
 		this.status,
 		this.remark
-	);
+  });
 
 	factory MetalData.fromJson(Map<String, dynamic> json) => _$MetalDataFromJson(json);
 

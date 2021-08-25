@@ -19,7 +19,7 @@ class _WebViewState extends State<WebView> {
         title: const Text('Metal Monitoring System'),
         leading: IconButton(icon: Icon(Icons.arrow_back), onPressed: (){
           //Navigator.popAndPushNamed(context, '/');
-          Navigator.popUntil(context, ModalRoute.withName('/'));
+          Navigator.pop(context);
         }), 
       ),
     );
